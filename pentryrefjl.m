@@ -1,4 +1,3 @@
-peringatan jangan dijalankan kodenya untuk saat ini
 %pkg load video  % Load the video package for avi function
 
 % Parameter simulasi
@@ -20,10 +19,9 @@ end
 u0 = [1.0; 0.0];
 
 % Waktu
-tspan = [0.0, 100.0];
+tspan = [0.0, 50.0];
 
 % Solusi numerik
-global k m gamma
 k = 1.0;
 m = 1.0;
 gamma = 0.1;
@@ -32,17 +30,30 @@ options = odeset('MaxStep', dt);
 
 % Buat animasi
 figure;
-v = VideoWriter('gerak_harmonik_teredam.avi');
-open(v);
-for i = 1:length(t)
+
+% Ubah ini sesuai dengan nama file yang diinginkan
+filename = 'gerak_harmonik_teredam.gif';
+
+% Kurangi jumlah frame untuk mengurangi waktu animasi
+frames_per_second = 90; % Ubah sesuai kebutuhan
+num_frames = round(frames_per_second * 30); % Animasi 1 menit
+frame_step = round(length(t) / num_frames);
+
+for i = 1:frame_step:length(t)
     plot(t(1:i), sol(1:i, 1), 'LineWidth', 2);
     xlabel('Waktu');
     ylabel('Posisi');
     title('Gerak Harmonik Teredam');
     legend('Posisi');
     drawnow;
-    frame = getframe(gcf);
-    writeVideo(v, frame);
-end
-close(v);
 
+    % Simpan frame sebagai file GIF
+    frame = getframe(gcf);
+    im = frame2im(frame);
+
+    if i == 1
+        imwrite(im, filename, 'gif', 'LoopCount', Inf, 'DelayTime', 1/frames_per_second);
+    else
+        imwrite(im, filename, 'gif', 'WriteMode', 'append', 'DelayTime', 1/frames_per_second);
+    end
+end
